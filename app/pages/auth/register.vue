@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <LoginForm /> -->
+    <AuthRegisterComponent />
   </div>
 </template>
 
