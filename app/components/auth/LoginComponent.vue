@@ -12,7 +12,10 @@
           <span
             class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2fbe84] text-white"
           >
-            <Icon name="ion:wallet" class="h-5 w-5" />
+            <Icon
+              name="ion:wallet"
+              class="h-5 w-5"
+            />
           </span>
           <span>ExpenseTracker</span>
         </NuxtLink>
@@ -28,7 +31,10 @@
             <div
               class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#2fbe84] text-white shadow-sm"
             >
-              <Icon name="ion:wallet" class="h-5 w-5" />
+              <Icon
+                name="ion:wallet"
+                class="h-5 w-5"
+              />
             </div>
           </div>
 
@@ -43,7 +49,10 @@
           </div>
 
           <!-- form -->
-          <form class="space-y-4" @submit.prevent="handleSubmit">
+          <form
+            class="space-y-4"
+            @submit.prevent="handleSubmit"
+          >
             <!-- email -->
             <div>
               <label
@@ -60,7 +69,7 @@
                   type="email"
                   placeholder="Enter your email"
                   class="h-[48px] w-full rounded-xl border border-[#d9dee6] bg-white pl-4 pr-12 text-[14px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10"
-                />
+                >
 
                 <span
                   class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#9aa4b2]"
@@ -104,13 +113,13 @@
                   :type="showPassword ? 'text' : 'password'"
                   placeholder="Enter your password"
                   class="h-[48px] w-full rounded-xl border border-[#d9dee6] bg-white pl-4 pr-12 text-[14px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10"
-                />
+                >
 
                 <button
                   type="button"
                   class="absolute inset-y-0 right-4 flex items-center text-[#9aa4b2] transition hover:text-[#64748b] cursor-pointer"
-                  @click="showPassword = !showPassword"
                   :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                  @click="showPassword = !showPassword"
                 >
                   <svg
                     v-if="!showPassword"
@@ -126,7 +135,11 @@
                       stroke-linejoin="round"
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"
                     />
-                    <circle cx="12" cy="12" r="3" />
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3"
+                    />
                   </svg>
 
                   <svg
@@ -169,7 +182,7 @@
                 v-model="form.remember"
                 type="checkbox"
                 class="h-4 w-4 rounded border-[#cbd5e1] text-[#2fbe84] focus:ring-[#2fbe84] cursor-pointer"
-              />
+              >
               <span>Remember me for 30 days</span>
             </label>
 
@@ -216,16 +229,14 @@ const showPassword = ref(false)
 const form = reactive({
   email: '',
   password: '',
-  remember: false,
+  remember: false
 })
 
 const handleSubmit = () => {
   emit('submit', {
     email: form.email,
     password: form.password,
-    remember: form.remember,
+    remember: form.remember
   })
 }
-
-
 </script>
