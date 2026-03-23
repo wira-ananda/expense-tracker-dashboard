@@ -11,17 +11,17 @@ useHead({
   }
 })
 
-const title = 'Nuxt Starter Template'
+const title = 'Expense Tracker | Solusi Keuangan Kamu!'
 const description
-  = 'A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.'
+  = 'Aplikasi pencatatan keuangan yang cepat, sederhana, dan efisien. Kelola pengeluaran harianmu tanpa ribet.'
 
 useSeoMeta({
   title,
   description,
   ogTitle: title,
   ogDescription: description,
-  ogImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
-  twitterImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
+  ogImage: '/og-cover.png',
+  twitterImage: '/og-cover.png',
   twitterCard: 'summary_large_image'
 })
 </script>
