@@ -1,11 +1,44 @@
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+
+defineProps<{
+  loading?: boolean
+}>()
+
+const emit = defineEmits<{
+  submit: [
+    payload: {
+      usernameOrEmail: string
+      password: string
+      remember: boolean
+    }
+  ]
+}>()
+
+const showPassword = ref(false)
+
+const form = reactive({
+  usernameOrEmail: '',
+  password: '',
+  remember: false
+})
+
+const handleSubmit = () => {
+  emit('submit', {
+    usernameOrEmail: form.usernameOrEmail,
+    password: form.password,
+    remember: form.remember
+  })
+}
+</script>
+
 <template>
   <section class="min-h-screen bg-[#f5f7f9]">
     <div class="mx-auto flex flex-col rounded-[10px] bg-transparent">
-      <!-- Brand area -->
       <div class="px-6 md:pt-5">
         <NuxtLink
           to="/"
-          class=" hidden md:inline-flex items-center gap-3 rounded-full bg-white/90 px-4 py-2.5 text-sm font-semibold text-[#0f172a] shadow-sm ring-1 ring-black/5 backdrop-blur transition hover:shadow-md "
+          class="hidden md:inline-flex items-center gap-3 rounded-full bg-white/90 px-4 py-2.5 text-sm font-semibold text-[#0f172a] shadow-sm ring-1 ring-black/5 backdrop-blur transition hover:shadow-md"
         >
           <span
             class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2fbe84] text-white"
@@ -19,12 +52,10 @@
         </NuxtLink>
       </div>
 
-      <!-- Card area -->
       <div class="flex flex-1 items-center justify-center px-6 py-8">
         <div
           class="w-full max-w-[440px] rounded-[22px] bg-white px-7 py-8 shadow-[0_16px_40px_rgba(15,23,42,0.10)] ring-1 ring-black/5 sm:max-w-[470px] sm:px-8 sm:py-9 lg:max-w-[500px] lg:px-10 lg:py-10"
         >
-          <!-- top icon -->
           <div class="mb-6 flex justify-center">
             <div
               class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-[#2fbe84] text-white shadow-sm sm:h-16 sm:w-16"
@@ -36,7 +67,6 @@
             </div>
           </div>
 
-          <!-- heading -->
           <div class="mb-8 text-center">
             <h1
               class="text-[34px] font-extrabold leading-none tracking-[-0.02em] text-[#0f172a] sm:text-[38px] lg:text-[42px]"
@@ -48,15 +78,13 @@
             </p>
           </div>
 
-          <!-- form -->
           <form
             class="space-y-5"
             @submit.prevent="handleSubmit"
           >
-            <!-- email -->
             <div>
               <label
-                for="email"
+                for="usernameOrEmail"
                 class="mb-2.5 block text-[14px] font-semibold text-[#0f172a]"
               >
                 Email or Username
@@ -64,10 +92,10 @@
 
               <div class="relative">
                 <input
-                  id="email"
-                  v-model="form.email"
-                  type="email"
-                  placeholder="Enter your email"
+                  id="usernameOrEmail"
+                  v-model="form.usernameOrEmail"
+                  type="text"
+                  placeholder="Enter your email or username"
                   class="h-[54px] w-full rounded-2xl border border-[#d9dee6] bg-white pl-5 pr-14 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10 sm:h-[58px] sm:text-[16px]"
                 >
 
@@ -97,7 +125,6 @@
               </div>
             </div>
 
-            <!-- password -->
             <div>
               <label
                 for="password"
@@ -176,26 +203,24 @@
               </div>
             </div>
 
-            <!-- remember -->
             <label class="flex cursor-pointer items-center gap-2 pt-1 text-[14px] text-[#334155]">
               <input
                 v-model="form.remember"
                 type="checkbox"
-                class="h-4 w-4 rounded border-[#cbd5e1] text-[#2fbe84] focus:ring-[#2fbe84] cursor-pointer"
+                class="h-4 w-4 cursor-pointer rounded border-[#cbd5e1] text-[#2fbe84] focus:ring-[#2fbe84]"
               >
               <span>Remember me for 30 days</span>
             </label>
 
-            <!-- button -->
             <button
               type="submit"
-              class="mt-2 flex h-[54px] w-full cursor-pointer items-center justify-center rounded-2xl bg-[#2fbe84] text-[15px] font-semibold text-white transition hover:bg-[#27a874] focus:outline-none focus:ring-4 focus:ring-[#2fbe84]/20 sm:h-[58px] sm:text-[16px]"
+              :disabled="loading"
+              class="mt-2 flex h-[54px] w-full cursor-pointer items-center justify-center rounded-2xl bg-[#2fbe84] text-[15px] font-semibold text-white transition hover:bg-[#27a874] focus:outline-none focus:ring-4 focus:ring-[#2fbe84]/20 disabled:cursor-not-allowed disabled:opacity-70 sm:h-[58px] sm:text-[16px]"
             >
-              Log In
+              {{ loading ? 'Loading...' : 'Log In' }}
             </button>
           </form>
 
-          <!-- footer -->
           <p class="mt-7 text-center text-[14px] text-[#64748b]">
             Don’t have an account?
             <NuxtLink
@@ -210,33 +235,3 @@
     </div>
   </section>
 </template>
-
-<script setup lang="ts">
-import { reactive, ref } from 'vue'
-
-const emit = defineEmits<{
-  submit: [
-    payload: {
-      email: string
-      password: string
-      remember: boolean
-    }
-  ]
-}>()
-
-const showPassword = ref(false)
-
-const form = reactive({
-  email: '',
-  password: '',
-  remember: false
-})
-
-const handleSubmit = () => {
-  emit('submit', {
-    email: form.email,
-    password: form.password,
-    remember: form.remember
-  })
-}
-</script>

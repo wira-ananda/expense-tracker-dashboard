@@ -1,3 +1,49 @@
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+
+const emit = defineEmits<{
+  submit: [
+    payload: {
+      username: string
+      email: string
+      password: string
+      confirmPassword: string
+      agree: boolean
+    }
+  ]
+}>()
+
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+
+const form = reactive({
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  agree: false
+})
+
+const handleSubmit = () => {
+  if (form.password.length < 6) return
+  if (form.password !== form.confirmPassword) return
+  if (!form.agree) return
+
+  emit('submit', {
+    username: form.username,
+    email: form.email,
+    password: form.password,
+    confirmPassword: form.confirmPassword,
+    agree: form.agree
+  })
+}
+
+const isPasswordMatch = computed(() => {
+  if (!form.confirmPassword) return true
+  return form.password === form.confirmPassword
+})
+</script>
+
 <template>
   <section class="min-h-screen bg-[#f5f7f9]">
     <div class="mx-auto flex flex-col rounded-[10px] bg-transparent">
@@ -22,7 +68,7 @@
       <!-- Card area -->
       <div class="flex flex-1 items-center justify-center px-6 py-8">
         <div
-          class="w-full max-w-[440px] rounded-[22px] bg-white px-7 py-8 shadow-[0_16px_40px_rgba(15,23,42,0.10)] ring-1 ring-black/5 sm:max-w-[470px] sm:px-8 sm:py-9 lg:max-w-[500px] lg:px-10 lg:py-10"
+          class="w-full max-w-110 rounded-[22px] bg-white px-7 py-8 shadow-[0_16px_40px_rgba(15,23,42,0.10)] ring-1 ring-black/5 sm:max-w-[470px] sm:px-8 sm:py-9 lg:max-w-[500px] lg:px-10 lg:py-10"
         >
           <!-- top icon -->
           <div class="mb-6 flex justify-center">
@@ -56,7 +102,7 @@
             <!-- full name -->
             <div>
               <label
-                for="fullname"
+                for="username"
                 class="mb-2.5 block text-[14px] font-semibold text-[#0f172a]"
               >
                 Full Name
@@ -64,13 +110,13 @@
 
               <div class="relative">
                 <input
-                  id="fullname"
-                  v-model="form.fullname"
+                  id="username"
+                  v-model="form.username"
                   type="text"
                   placeholder="Enter your full name"
                   autocomplete="name"
                   required
-                  class="h-[54px] w-full rounded-2xl border border-[#d9dee6] bg-white px-5 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10 sm:h-[58px] sm:text-[16px]"
+                  class="h-13.5 w-full rounded-2xl border border-[#d9dee6] bg-white px-5 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10 sm:h-14.5 sm:text-[16px]"
                 >
               </div>
             </div>
@@ -92,7 +138,7 @@
                   placeholder="Enter your email"
                   autocomplete="email"
                   required
-                  class="h-[54px] w-full rounded-2xl border border-[#d9dee6] bg-white pl-5 pr-14 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10 sm:h-[58px] sm:text-[16px]"
+                  class="h-[54px] w-full rounded-2xl border border-[#d9dee6] bg-white pl-5 pr-14 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10 sm:h-14.5 sm:text-[16px]"
                 >
 
                 <span
@@ -139,13 +185,12 @@
                   autocomplete="new-password"
                   minlength="6"
                   required
-                  class="h-[54px] w-full rounded-2xl border border-[#d9dee6] bg-white pl-5 pr-14 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10 sm:h-[58px] sm:text-[16px]"
+                  class="h-13.5 w-full rounded-2xl border border-[#d9dee6] bg-white pl-5 pr-14 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10 sm:h-14.5 sm:text-[16px]"
                 >
 
                 <button
                   type="button"
                   class="absolute inset-y-0 right-5 flex cursor-pointer items-center text-[#9aa4b2] transition hover:text-[#64748b]"
-                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
                   @click="showPassword = !showPassword"
                 >
                   <svg
@@ -168,7 +213,6 @@
                       r="3"
                     />
                   </svg>
-
                   <svg
                     v-else
                     xmlns="http://www.w3.org/2000/svg"
@@ -208,7 +252,7 @@
             </div>
 
             <!-- confirm password -->
-            <div>
+            <div class="mt-4">
               <label
                 for="confirmPassword"
                 class="mb-2.5 block text-[14px] font-semibold text-[#0f172a]"
@@ -225,13 +269,15 @@
                   autocomplete="new-password"
                   minlength="6"
                   required
-                  class="h-[54px] w-full rounded-2xl border border-[#d9dee6] bg-white pl-5 pr-14 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2fbe84] focus:ring-4 focus:ring-[#2fbe84]/10 sm:h-[58px] sm:text-[16px]"
+                  :class="[
+                    'h-13.5 w-full rounded-2xl border bg-white pl-5 pr-14 text-[15px] text-[#0f172a] outline-none transition placeholder:text-[#94a3b8] sm:h-14.5 sm:text-[16px]',
+                    !isPasswordMatch ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : 'border-[#d9dee6] focus:border-[#2fbe84] focus:ring-[#2fbe84]/10'
+                  ]"
                 >
 
                 <button
                   type="button"
                   class="absolute inset-y-0 right-5 flex cursor-pointer items-center text-[#9aa4b2] transition hover:text-[#64748b]"
-                  :aria-label="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'"
                   @click="showConfirmPassword = !showConfirmPassword"
                 >
                   <svg
@@ -254,7 +300,6 @@
                       r="3"
                     />
                   </svg>
-
                   <svg
                     v-else
                     xmlns="http://www.w3.org/2000/svg"
@@ -287,6 +332,13 @@
                   </svg>
                 </button>
               </div>
+
+              <p
+                v-if="!isPasswordMatch"
+                class="mt-2 text-[12px] text-red-500 font-medium"
+              >
+                Passwords do not match.
+              </p>
             </div>
 
             <!-- terms -->
@@ -299,26 +351,24 @@
               >
               <span>
                 I agree to the
-                <NuxtLink
-                  to="/terms"
+                <p
                   class="font-medium text-[#2fbe84] transition hover:text-[#23986a]"
                 >
                   Terms of Service
-                </NuxtLink>
+                </p>
                 and
-                <NuxtLink
-                  to="/privacy"
+                <p
                   class="font-medium text-[#2fbe84] transition hover:text-[#23986a]"
                 >
                   Privacy Policy
-                </NuxtLink>
+                </p>
               </span>
             </label>
 
             <!-- button -->
             <button
               type="submit"
-              class="mt-2 flex h-[54px] w-full cursor-pointer items-center justify-center rounded-2xl bg-[#2fbe84] text-[15px] font-semibold text-white transition hover:bg-[#27a874] focus:outline-none focus:ring-4 focus:ring-[#2fbe84]/20 sm:h-[58px] sm:text-[16px]"
+              class="mt-2 flex h-13.5 w-full cursor-pointer items-center justify-center rounded-2xl bg-[#2fbe84] text-[15px] font-semibold text-white transition hover:bg-[#27a874] focus:outline-none focus:ring-4 focus:ring-[#2fbe84]/20 sm:h-[58px] sm:text-[16px]"
             >
               Create Account
             </button>
@@ -339,44 +389,3 @@
     </div>
   </section>
 </template>
-
-<script setup lang="ts">
-import { reactive, ref } from 'vue'
-
-const emit = defineEmits<{
-  submit: [
-    payload: {
-      fullname: string
-      email: string
-      password: string
-      confirmPassword: string
-      agree: boolean
-    }
-  ]
-}>()
-
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
-
-const form = reactive({
-  fullname: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-  agree: false
-})
-
-const handleSubmit = () => {
-  if (form.password.length < 6) return
-  if (form.password !== form.confirmPassword) return
-  if (!form.agree) return
-
-  emit('submit', {
-    fullname: form.fullname,
-    email: form.email,
-    password: form.password,
-    confirmPassword: form.confirmPassword,
-    agree: form.agree
-  })
-}
-</script>

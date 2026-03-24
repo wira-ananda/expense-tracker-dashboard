@@ -16,6 +16,8 @@
     "@iconify-json/simple-icons": "^1.2.74",
     "@nuxt/icon": "^2.2.1",
     "@nuxt/ui": "^4.5.1",
+    "@tanstack/vue-query": "^5.95.2",
+    "axios": "^1.13.6",
     "nuxt": "^4.4.2",
     "tailwindcss": "^4.2.1"
   },

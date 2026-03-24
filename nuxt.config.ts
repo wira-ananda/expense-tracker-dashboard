@@ -7,6 +7,15 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
+  runtimeConfig: {
+    // Keys di dalam sini bersifat PRIVATE (hanya server-side)
+    apiSecret: '', // Akan diisi oleh NUXT_API_SECRET di .env
+
+    // Keys di dalam 'public' bersifat PUBLIC (bisa diakses di browser)
+    public: {
+      apiBase: 'http://localhost:2000/' // Akan diisi oleh NUXT_PUBLIC_API_BASE di .env
+    }
+  },
 
   routeRules: {
     '/': { prerender: true }
