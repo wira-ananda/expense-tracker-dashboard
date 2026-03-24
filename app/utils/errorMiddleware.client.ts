@@ -1,8 +1,7 @@
-export default function errorMiddleware(err: any) {
+export default function errorMiddleware(err: Error) {
   console.log('ERROR:', err)
 
-  const message =
-    err?.response?.data?.message || err?.message || 'Terjadi kesalahan.'
+  const message = err?.message || 'Terjadi kesalahan.'
 
   alert(message)
 }
