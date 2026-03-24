@@ -62,7 +62,7 @@ export const useLoginMutation = () => {
       await navigateTo('/', { replace: true })
     },
 
-    onError: (err: Error) => {
+    onError: (err: any) => {
       console.log('LOGIN ERROR FULL:', err)
       console.log('LOGIN ERROR RESPONSE:', err?.message)
       errorMiddleware(err)
@@ -87,7 +87,7 @@ export const useRegisterMutation = () => {
       await navigateTo('/auth/login', { replace: true })
     },
 
-    onError: (err: Error) => {
+    onError: (err: any) => {
       console.log('REGISTER ERROR:', err)
       errorMiddleware(err)
     }
