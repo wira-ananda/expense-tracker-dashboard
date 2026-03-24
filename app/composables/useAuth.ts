@@ -75,20 +75,24 @@ export const useRegisterMutation = () => {
 
   return useMutation<RegisterResponse, unknown, RegisterPayload>({
     mutationFn: async (userData: RegisterPayload) => {
+      console.log('REGISTER PAYLOAD:', userData)
       const { data } = await axiosInstance.post<RegisterResponse>(
         '/auth/register',
         userData
       )
+      console.log('REGISTER RESPONSE:', data)
 
       return data
     },
 
     onSuccess: async () => {
+      console.log('REGISTER SUCCESS')
       await navigateTo('/auth/login', { replace: true })
     },
 
     onError: (err: any) => {
-      console.log('REGISTER ERROR:', err)
+      console.log('REGISTER ERROR FULL:', err)
+      console.log('REGISTER ERROR RESPONSE:', err?.message)
       errorMiddleware(err)
     }
   })
