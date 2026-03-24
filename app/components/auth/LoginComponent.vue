@@ -8,9 +8,9 @@ defineProps<{
 const emit = defineEmits<{
   submit: [
     payload: {
-      username: string
-      email: string
+      usernameOrEmail: string
       password: string
+      remember: boolean
     }
   ]
 }>()
@@ -18,16 +18,16 @@ const emit = defineEmits<{
 const showPassword = ref(false)
 
 const form = reactive({
-  username: '',
-  email: '',
-  password: ''
+  usernameOrEmail: '',
+  password: '',
+  remember: false
 })
 
 const handleSubmit = () => {
   emit('submit', {
-    username: form.username,
-    email: form.email,
-    password: form.password
+    usernameOrEmail: form.usernameOrEmail,
+    password: form.password,
+    remember: form.remember
   })
 }
 </script>

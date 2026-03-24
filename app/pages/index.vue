@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const { logout } = useLogout()
+</script>
+
 <template>
   <div>
     <UPageHero
@@ -72,5 +76,8 @@
         }]"
       />
     </UPageSection>
+    <button @click="logout">
+      Logout
+    </button>
   </div>
 </template>

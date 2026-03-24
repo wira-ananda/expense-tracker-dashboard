@@ -97,3 +97,19 @@ export const useRegisterMutation = () => {
     }
   })
 }
+
+export const useLogout = () => {
+  const authToken = useCookie<string | null>('auth_token')
+  const userCookie = useCookie<User | null>('user')
+
+  const logout = async () => {
+    authToken.value = null
+    userCookie.value = null
+
+    await navigateTo('/auth/login', { replace: true })
+  }
+
+  return {
+    logout
+  }
+}

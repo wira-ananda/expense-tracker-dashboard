@@ -351,19 +351,17 @@ const isPasswordMatch = computed(() => {
               >
               <span>
                 I agree to the
-                <NuxtLink
-                  to="/terms"
+                <p
                   class="font-medium text-[#2fbe84] transition hover:text-[#23986a]"
                 >
                   Terms of Service
-                </NuxtLink>
+                </p>
                 and
-                <NuxtLink
-                  to="/privacy"
+                <p
                   class="font-medium text-[#2fbe84] transition hover:text-[#23986a]"
                 >
                   Privacy Policy
-                </NuxtLink>
+                </p>
               </span>
             </label>
 
