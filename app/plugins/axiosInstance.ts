@@ -8,7 +8,7 @@ export default defineNuxtPlugin(() => {
     baseURL: config.public.apiBase as string
   })
 
-  axiosInstance.interceptors.request.use(request => {
+  axiosInstance.interceptors.request.use((request) => {
     if (authToken.value) {
       request.headers.set('Authorization', `Bearer ${authToken.value}`)
     }
