@@ -1,51 +1,98 @@
+<script setup lang="ts">
+import AppSidebar from '~/components/dashboard/AppSidebar.vue'
+import AppHeader from '~/components/dashboard/AppHeader.vue'
+
+const route = useRoute()
+
+const authUser = useState('auth_user', () => ({
+  name: 'Sarah',
+  email: 'sarah@example.com',
+  avatar: ''
+}))
+
+const routeTitleMap: Record<string, { title: string; subtitle?: string }> = {
+  '/transactions': {
+    title: 'Transaksi',
+    subtitle: 'Kelola seluruh pemasukan dan pengeluaranmu'
+  },
+  '/monthly-summary': {
+    title: 'Ringkasan Bulanan',
+    subtitle: 'Lihat performa keuanganmu per bulan'
+  },
+  '/profile-settings': {
+    title: 'Pengaturan Profil',
+    subtitle: 'Atur data akun dan preferensimu'
+  }
+}
+
+const pageHeader = computed(() => {
+  const metaTitle = route.meta.pageTitle as string | undefined
+  const metaSubtitle = route.meta.pageSubtitle as string | undefined
+
+  if (route.path === '/') {
+    return {
+      title: `Selamat datang kembali, ${authUser.value?.name || 'Pengguna'}!`,
+      subtitle: 'Berikut ringkasan keuanganmu bulan ini'
+    }
+  }
+
+  if (metaTitle) {
+    return {
+      title: metaTitle,
+      subtitle: metaSubtitle
+    }
+  }
+
+  const fromMap = routeTitleMap[route.path]
+  if (fromMap) {
+    return fromMap
+  }
+
+  return {
+    title: 'Halaman',
+    subtitle: ''
+  }
+})
+
+const headerActionLabel = computed(
+  () => (route.meta.headerActionLabel as string | undefined) || ''
+)
+
+const headerActionTo = computed(
+  () => (route.meta.headerActionTo as string | undefined) || ''
+)
+</script>
+
 <template>
-  <div>
-    <UHeader>
-      <template #left>
-        <NuxtLink to="/">
-          <AppLogo class="h-6 w-auto shrink-0" />
-        </NuxtLink>
+  <div class="min-h-screen bg-[#F6F8FB] text-[#0F172A]">
+    <div class="flex">
+      <AppSidebar />
 
-        <TemplateMenu />
-      </template>
+      <div class="min-w-0 flex-1">
+        <AppHeader
+          :title="pageHeader.title"
+          :subtitle="pageHeader.subtitle"
+          :action-label="headerActionLabel"
+          :action-to="headerActionTo"
+        >
+          <template #right>
+            <slot name="header-right">
+              <NuxtLink
+                v-if="headerActionLabel && headerActionTo"
+                :to="headerActionTo"
+                class="inline-flex h-12 items-center gap-2 rounded-[12px] bg-[#18B66A] px-5 text-[14px] font-semibold text-white shadow-sm transition hover:bg-[#14a45f]"
+              >
+                <span class="text-[18px] leading-none">+</span>
+                <span>{{ headerActionLabel }}</span>
+              </NuxtLink>
+            </slot>
+          </template>
+        </AppHeader>
 
-      <template #right>
-        <UColorModeButton />
-
-        <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-          color="neutral"
-          variant="ghost"
-        />
-      </template>
-    </UHeader>
-
-    <UMain>
-      <slot />
-    </UMain>
-
-    <USeparator icon="i-simple-icons-nuxtdotjs" />
-
-    <UFooter>
-      <template #left>
-        <p class="text-sm text-muted">
-          Built with Nuxt UI • © {{ new Date().getFullYear() }}
-        </p>
-      </template>
-
-      <template #right>
-        <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-          color="neutral"
-          variant="ghost"
-        />
-      </template>
-    </UFooter>
+        <main class="px-8 pb-8">
+          <slot />
+        </main>
+      </div>
+    </div>
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import AppLogo from '../AppLogo.vue'
 
 defineProps<{
   loading?: boolean
@@ -40,14 +41,7 @@ const handleSubmit = () => {
           to="/"
           class="hidden md:inline-flex items-center gap-3 rounded-full bg-white/90 px-4 py-2.5 text-sm font-semibold text-[#0f172a] shadow-sm ring-1 ring-black/5 backdrop-blur transition hover:shadow-md"
         >
-          <span
-            class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2fbe84] text-white"
-          >
-            <Icon
-              name="ion:wallet"
-              class="h-5 w-5"
-            />
-          </span>
+          <AppLogo />
           <span>ExpenseTracker</span>
         </NuxtLink>
       </div>
@@ -57,19 +51,15 @@ const handleSubmit = () => {
           class="w-full max-w-[440px] rounded-[22px] bg-white px-7 py-8 shadow-[0_16px_40px_rgba(15,23,42,0.10)] ring-1 ring-black/5 sm:max-w-[470px] sm:px-8 sm:py-9 lg:max-w-[500px] lg:px-10 lg:py-10"
         >
           <div class="mb-6 flex justify-center">
-            <div
-              class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-[#2fbe84] text-white shadow-sm sm:h-16 sm:w-16"
-            >
-              <Icon
-                name="ion:wallet"
-                class="h-6 w-6 sm:h-7 sm:w-7"
-              />
-            </div>
+            <AppLogo
+              size="h-14 w-14"
+              icon-size="h-6 w-6"
+            />
           </div>
 
           <div class="mb-8 text-center">
             <h1
-              class="text-[34px] font-extrabold leading-none tracking-[-0.02em] text-[#0f172a] sm:text-[38px] lg:text-[42px]"
+              class="text-[34px] font-semibold leading-none tracking-[-0.02em] text-[#0f172a] sm:text-[38px] lg:text-[42px]"
             >
               Welcome Back
             </h1>

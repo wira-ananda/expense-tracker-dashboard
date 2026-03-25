@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import AppLogo from '../AppLogo.vue'
 
 const emit = defineEmits<{
   submit: [
@@ -53,14 +54,7 @@ const isPasswordMatch = computed(() => {
           to="/"
           class="hidden md:inline-flex items-center gap-3 rounded-full bg-white/90 px-4 py-2.5 text-sm font-semibold text-[#0f172a] shadow-sm ring-1 ring-black/5 backdrop-blur transition hover:shadow-md"
         >
-          <span
-            class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2fbe84] text-white"
-          >
-            <Icon
-              name="ion:wallet"
-              class="h-5 w-5"
-            />
-          </span>
+          <AppLogo />
           <span>ExpenseTracker</span>
         </NuxtLink>
       </div>
@@ -72,20 +66,16 @@ const isPasswordMatch = computed(() => {
         >
           <!-- top icon -->
           <div class="mb-6 flex justify-center">
-            <div
-              class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-[#2fbe84] text-white shadow-sm sm:h-16 sm:w-16"
-            >
-              <Icon
-                name="ion:wallet"
-                class="h-6 w-6 sm:h-7 sm:w-7"
-              />
-            </div>
+            <AppLogo
+              size="h-14 w-14"
+              icon-size="w-6 h-6"
+            />
           </div>
 
           <!-- heading -->
           <div class="mb-8 text-center">
             <h1
-              class="text-[34px] font-extrabold leading-none tracking-[-0.02em] text-[#0f172a] sm:text-[38px] lg:text-[42px]"
+              class="text-[20px] font-semibold leading-none tracking-[-0.02em] text-[#0f172a] sm:text-[30px]"
             >
               Create Your Account
             </h1>
@@ -342,14 +332,14 @@ const isPasswordMatch = computed(() => {
             </div>
 
             <!-- terms -->
-            <label class="flex cursor-pointer items-start gap-3 pt-1 text-[14px] leading-6 text-[#334155]">
+            <!-- <label class="flex cursor-pointer items-start gap-3 pt-1 text-[14px] leading-6 text-[#334155]">
               <input
                 v-model="form.agree"
                 type="checkbox"
                 required
                 class="mt-1 h-4 w-4 rounded border-[#cbd5e1] text-[#2fbe84] focus:ring-[#2fbe84] cursor-pointer"
               >
-              <span>
+              <span class="flex">
                 I agree to the
                 <p
                   class="font-medium text-[#2fbe84] transition hover:text-[#23986a]"
@@ -363,7 +353,7 @@ const isPasswordMatch = computed(() => {
                   Privacy Policy
                 </p>
               </span>
-            </label>
+            </label> -->
 
             <!-- button -->
             <button
