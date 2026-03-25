@@ -65,6 +65,12 @@ export const useLoginMutation = () => {
     onError: (err: any) => {
       console.log('LOGIN ERROR FULL:', err)
       console.log('LOGIN ERROR RESPONSE:', err?.message)
+
+      if (err?.response?.status === 401) {
+        alert('Username/email atau password salah')
+        return
+      }
+
       errorMiddleware(err)
     }
   })
