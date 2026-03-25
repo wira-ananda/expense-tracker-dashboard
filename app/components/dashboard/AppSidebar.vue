@@ -4,8 +4,7 @@ import {
   ReceiptText,
   CalendarDays,
   Settings,
-  LogOut,
-  Wallet
+  LogOut
 } from 'lucide-vue-next'
 import AppLogo from '../AppLogo.vue'
 
@@ -57,11 +56,6 @@ const initials = computed(() => {
     .join('')
     .toUpperCase()
 })
-
-const handleLogout = () => {
-  // isi logout-mu di sini
-  console.log('logout')
-}
 </script>
 
 <template>
