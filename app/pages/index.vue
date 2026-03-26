@@ -209,7 +209,7 @@ const areaChartOptions = computed<ApexOptions>(() => ({
       colors: '#64748B'
     },
     markers: {
-      radius: 12
+      size: 12
     }
   },
   xaxis: {
