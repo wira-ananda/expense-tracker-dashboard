@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import {
   LayoutDashboard,
   ReceiptText,
@@ -9,14 +10,18 @@ import {
 import AppLogo from '../AppLogo.vue'
 
 const { logout } = useLogout()
-
 const route = useRoute()
 
-const authUser = useState('auth_user', () => ({
-  name: 'Sarah Johnson',
-  email: 'sarah@example.com',
-  avatar: ''
-}))
+type User = {
+  id: string
+  username: string
+  email: string
+}
+
+const props = defineProps<{
+  user?: User
+  isPending: boolean
+}>()
 
 const navItems = [
   {
@@ -48,7 +53,8 @@ const navItems = [
 const isActive = (item: (typeof navItems)[number]) => item.match(route.path)
 
 const initials = computed(() => {
-  const name = authUser.value?.name || 'User'
+  const name = props.user?.username || 'User'
+
   return name
     .split(' ')
     .map(part => part[0])
@@ -103,28 +109,22 @@ const initials = computed(() => {
           <div
             class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E2E8F0] text-[12px] font-semibold text-[#334155]"
           >
-            <img
-              v-if="authUser.avatar"
-              :src="authUser.avatar"
-              :alt="authUser.name"
-              class="h-full w-full object-cover"
-            >
-            <span v-else>{{ initials }}</span>
+            <span>{{ initials }}</span>
           </div>
 
           <div class="min-w-0">
             <p class="truncate text-[14px] font-semibold text-[#0F172A]">
-              {{ authUser.name }}
+              {{ isPending ? 'Loading...' : (props.user?.username || 'Pengguna') }}
             </p>
             <p class="truncate text-[12px] text-[#94A3B8]">
-              {{ authUser.email }}
+              {{ isPending ? 'Memuat email...' : (props.user?.email || '-') }}
             </p>
           </div>
         </div>
 
         <button
           type="button"
-          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#94A3B8] transition hover:bg-[#F6F8FB] hover:text-[#0F172A] cursor-pointer"
+          class="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-[#94A3B8] transition hover:bg-[#F6F8FB] hover:text-[#0F172A]"
           aria-label="Keluar"
           @click="logout"
         >

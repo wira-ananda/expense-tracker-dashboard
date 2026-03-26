@@ -4,11 +4,7 @@ import AppHeader from '~/components/dashboard/AppHeader.vue'
 
 const route = useRoute()
 
-const authUser = useState('auth_user', () => ({
-  name: 'Sarah',
-  email: 'sarah@example.com',
-  avatar: ''
-}))
+const { data: user, isPending } = useMeQuery()
 
 const routeTitleMap: Record<string, { title: string; subtitle?: string }> = {
   '/transactions': {
@@ -31,7 +27,9 @@ const pageHeader = computed(() => {
 
   if (route.path === '/') {
     return {
-      title: `Selamat datang kembali, ${authUser.value?.name || 'Pengguna'}!`,
+     title: !isPending.value
+  ? `Selamat datang kembali, ${user.value?.username || 'Pengguna'}!`
+  : 'Loading...',
       subtitle: 'Berikut ringkasan keuanganmu bulan ini'
     }
   }
@@ -66,7 +64,10 @@ const headerActionTo = computed(
 <template>
   <div class="min-h-screen bg-[#F6F8FB] text-[#0F172A]">
     <div class="flex">
-      <AppSidebar />
+      <AppSidebar
+        :user="user"
+        :is-pending="isPending"
+      />
 
       <div class="min-w-0 flex-1">
         <AppHeader
