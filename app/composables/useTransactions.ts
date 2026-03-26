@@ -131,7 +131,7 @@ export const useMonthlyHistoryRangeQuery = (monthsCount: MaybeNumber) => {
       const requestedMonths = buildRequestedMonths(unref(monthsCount))
 
       const responses = await Promise.all(
-        requestedMonths.map(async item => {
+        requestedMonths.map(async (item) => {
           const { data } = await axiosInstance.get<RawMonthlyHistoryResponse>(
             '/transactions/history/by-month',
             {

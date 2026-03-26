@@ -14,7 +14,7 @@ const {
   selectedRangeMonths,
   savingsGoalPercent,
   recentTransactions,
-  totalTransactions,
+  // totalTransactions,
   currentMonthTransactions,
   currentSummary,
   previousSummary,

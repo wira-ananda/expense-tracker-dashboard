@@ -18,10 +18,16 @@ type User = {
   email: string
 }
 
-const props = defineProps<{
-  user?: User
-  isPending: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    user?: User
+    isPending: boolean
+    mobile?: boolean
+  }>(),
+  {
+    mobile: false
+  }
+)
 
 const navItems = [
   {
@@ -66,15 +72,22 @@ const initials = computed(() => {
 
 <template>
   <aside
-    class="sticky top-0 flex h-screen w-[240px] shrink-0 flex-col border-r border-[#E8EDF3] bg-white"
+    :class="[
+      'flex flex-col bg-white',
+      mobile
+        ? 'h-[calc(100dvh-72px)] overflow-y-auto'
+        : 'sticky top-0 h-dvh w-[240px] shrink-0 border-r border-[#E8EDF3]'
+    ]"
   >
-    <div class="flex h-[78px] items-center border-b border-[#E8EDF3] px-5">
+    <div
+      v-if="!mobile"
+      class="flex h-[78px] items-center border-b border-[#E8EDF3] px-5"
+    >
       <NuxtLink
         to="/"
         class="flex items-center gap-3"
       >
         <AppLogo />
-
         <span class="text-[18px] font-semibold tracking-[-0.02em] text-[#0F172A]">
           ExpenseTracker
         </span>

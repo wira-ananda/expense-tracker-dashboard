@@ -3,8 +3,8 @@ import { useSummaryQuery } from './useSummary'
 import {
   formatMonthParam,
   useMonthlyHistoryRangeQuery,
-  useTransactionsQuery,
-  type TransactionItem
+  useTransactionsQuery
+  // type TransactionItem
 } from './useTransactions'
 
 type DashboardSection =
