@@ -107,16 +107,7 @@ const handleSubmit = async () => {
 
 <template>
   <section class="mx-auto w-full pb-8 mt-6">
-    <div class="mb-6">
-      <button
-        type="button"
-        class="inline-flex cursor-pointer items-center gap-2 rounded-[10px] px-2 py-1 text-[14px] font-medium text-[#334155] transition hover:bg-[#EEF3F8] hover:text-[#0F172A]"
-        @click="handleGoBack"
-      >
-        <ArrowLeft class="h-6 w-6" />
-        <span>Kembali</span>
-      </button>
-
+    <div class="mb-6 flex justify-between">
       <div class="mt-3">
         <h1 class="text-[28px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A]">
           Tambah Transaksi
@@ -125,6 +116,14 @@ const handleSubmit = async () => {
           Catat pemasukan atau pengeluaran baru dengan rapi.
         </p>
       </div>
+      <button
+        type="button"
+        class="inline-flex cursor-pointer items-center gap-2 rounded-[10px] px-2 py-1 text-[14px] font-medium text-[#334155] transition hover:bg-[#EEF3F8] hover:text-[#0F172A]"
+        @click="handleGoBack"
+      >
+        <ArrowLeft class="h-6 w-6" />
+        <span>Kembali</span>
+      </button>
     </div>
 
     <div class="rounded-[20px] border border-[#E7EDF4] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
