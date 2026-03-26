@@ -22,6 +22,8 @@ watch(
   }
 )
 
+const hideAppHeader = computed(() => Boolean(route.meta.hideAppHeader))
+
 const routeTitleMap: Record<string, { title: string; subtitle?: string }> = {
   '/transactions': {
     title: 'Transaksi',
@@ -171,6 +173,7 @@ const headerActionTo = computed(
         </Transition>
 
         <AppHeader
+          v-if="!hideAppHeader"
           :title="pageHeader.title"
           :subtitle="pageHeader.subtitle"
           :action-label="headerActionLabel"

@@ -1,5 +1,6 @@
 import { computed, unref, type Ref } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import errorMiddleware from '~/utils/errorMiddleware.client'
 import { useAxiosInstance } from './useAxiosInstance'
 
 type MaybeNumber = Ref<number> | number
@@ -33,6 +34,13 @@ export type MonthlyHistoryItem = {
   expense: number
   balance: number
   transactions: TransactionItem[]
+}
+
+export type CreateTransactionPayload = {
+  categoryId: string
+  amount: number
+  note?: string | null
+  transactionDate?: string
 }
 
 type RawTransactionItem = Omit<TransactionItem, 'amount'> & {
@@ -152,5 +160,48 @@ export const useMonthlyHistoryRangeQuery = (monthsCount: MaybeNumber) => {
       return responses
     },
     staleTime: 60_000
+  })
+}
+
+export const useCategoriesQuery = () => {
+  const axiosInstance = useAxiosInstance()
+
+  return useQuery<TransactionCategory[]>({
+    queryKey: ['categories', 'all'],
+    queryFn: async () => {
+      const { data } =
+        await axiosInstance.get<TransactionCategory[]>('/categories')
+
+      return Array.isArray(data) ? data : []
+    },
+    staleTime: 60_000
+  })
+}
+
+export const useCreateTransactionMutation = () => {
+  const axiosInstance = useAxiosInstance()
+  const queryClient = useQueryClient()
+
+  return useMutation<TransactionItem, unknown, CreateTransactionPayload>({
+    mutationFn: async (payload) => {
+      const { data } = await axiosInstance.post<RawTransactionItem>(
+        '/transactions',
+        payload
+      )
+
+      return normalizeTransaction(data)
+    },
+
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['transactions'] }),
+        queryClient.invalidateQueries({ queryKey: ['summary'] }),
+        queryClient.invalidateQueries({ queryKey: ['categories'] })
+      ])
+    },
+
+    onError: (err: any) => {
+      errorMiddleware(err)
+    }
   })
 }
