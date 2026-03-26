@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import {
   LayoutDashboard,
   ReceiptText,
@@ -9,14 +10,24 @@ import {
 import AppLogo from '../AppLogo.vue'
 
 const { logout } = useLogout()
-
 const route = useRoute()
 
-const authUser = useState('auth_user', () => ({
-  name: 'Sarah Johnson',
-  email: 'sarah@example.com',
-  avatar: ''
-}))
+type User = {
+  id: string
+  username: string
+  email: string
+}
+
+const props = withDefaults(
+  defineProps<{
+    user?: User
+    isPending: boolean
+    mobile?: boolean
+  }>(),
+  {
+    mobile: false
+  }
+)
 
 const navItems = [
   {
@@ -48,7 +59,8 @@ const navItems = [
 const isActive = (item: (typeof navItems)[number]) => item.match(route.path)
 
 const initials = computed(() => {
-  const name = authUser.value?.name || 'User'
+  const name = props.user?.username || 'User'
+
   return name
     .split(' ')
     .map(part => part[0])
@@ -60,15 +72,22 @@ const initials = computed(() => {
 
 <template>
   <aside
-    class="sticky top-0 flex h-screen w-[240px] shrink-0 flex-col border-r border-[#E8EDF3] bg-white"
+    :class="[
+      'flex flex-col bg-white',
+      mobile
+        ? 'h-[calc(100dvh-72px)] overflow-y-auto'
+        : 'sticky top-0 h-dvh w-[240px] shrink-0 border-r border-[#E8EDF3]'
+    ]"
   >
-    <div class="flex h-[78px] items-center border-b border-[#E8EDF3] px-5">
+    <div
+      v-if="!mobile"
+      class="flex h-[78px] items-center border-b border-[#E8EDF3] px-5"
+    >
       <NuxtLink
         to="/"
         class="flex items-center gap-3"
       >
         <AppLogo />
-
         <span class="text-[18px] font-semibold tracking-[-0.02em] text-[#0F172A]">
           ExpenseTracker
         </span>
@@ -103,28 +122,22 @@ const initials = computed(() => {
           <div
             class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E2E8F0] text-[12px] font-semibold text-[#334155]"
           >
-            <img
-              v-if="authUser.avatar"
-              :src="authUser.avatar"
-              :alt="authUser.name"
-              class="h-full w-full object-cover"
-            >
-            <span v-else>{{ initials }}</span>
+            <span>{{ initials }}</span>
           </div>
 
           <div class="min-w-0">
             <p class="truncate text-[14px] font-semibold text-[#0F172A]">
-              {{ authUser.name }}
+              {{ isPending ? 'Loading...' : (props.user?.username || 'Pengguna') }}
             </p>
             <p class="truncate text-[12px] text-[#94A3B8]">
-              {{ authUser.email }}
+              {{ isPending ? 'Memuat email...' : (props.user?.email || '-') }}
             </p>
           </div>
         </div>
 
         <button
           type="button"
-          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#94A3B8] transition hover:bg-[#F6F8FB] hover:text-[#0F172A] cursor-pointer"
+          class="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-[#94A3B8] transition hover:bg-[#F6F8FB] hover:text-[#0F172A]"
           aria-label="Keluar"
           @click="logout"
         >
