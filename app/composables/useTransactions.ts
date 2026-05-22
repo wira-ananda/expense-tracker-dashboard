@@ -1,7 +1,7 @@
 import { computed, unref, type Ref } from 'vue'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import errorMiddleware from '~/utils/errorMiddleware.client'
-import { useAxiosInstance } from './useAxiosInstance'
+import { useApi } from './useApi'
 
 type MaybeNumber = Ref<number> | number
 
@@ -113,13 +113,13 @@ const normalizeMonthlyHistory = (
 })
 
 export const useTransactionsQuery = () => {
-  const axiosInstance = useAxiosInstance()
+  const { apiFetch } = useApi()
 
   return useQuery<TransactionItem[]>({
     queryKey: ['transactions', 'all'],
     queryFn: async () => {
-      const { data } =
-        await axiosInstance.get<RawTransactionItem[]>('/transactions')
+      const data = await apiFetch<RawTransactionItem[]>('/transactions')
+
       return Array.isArray(data) ? data.map(normalizeTransaction) : []
     },
     staleTime: 60_000
@@ -127,7 +127,7 @@ export const useTransactionsQuery = () => {
 }
 
 export const useMonthlyHistoryRangeQuery = (monthsCount: MaybeNumber) => {
-  const axiosInstance = useAxiosInstance()
+  const { apiFetch } = useApi()
 
   return useQuery<MonthlyHistoryItem[]>({
     queryKey: computed(() => [
@@ -139,11 +139,11 @@ export const useMonthlyHistoryRangeQuery = (monthsCount: MaybeNumber) => {
       const requestedMonths = buildRequestedMonths(unref(monthsCount))
 
       const responses = await Promise.all(
-        requestedMonths.map(async (item) => {
-          const { data } = await axiosInstance.get<RawMonthlyHistoryResponse>(
+        requestedMonths.map(async item => {
+          const data = await apiFetch<RawMonthlyHistoryResponse>(
             '/transactions/history/by-month',
             {
-              params: {
+              query: {
                 year: item.year,
                 month: item.month
               }
@@ -164,13 +164,12 @@ export const useMonthlyHistoryRangeQuery = (monthsCount: MaybeNumber) => {
 }
 
 export const useCategoriesQuery = () => {
-  const axiosInstance = useAxiosInstance()
+  const { apiFetch } = useApi()
 
   return useQuery<TransactionCategory[]>({
     queryKey: ['categories', 'all'],
     queryFn: async () => {
-      const { data } =
-        await axiosInstance.get<TransactionCategory[]>('/categories')
+      const data = await apiFetch<TransactionCategory[]>('/categories')
 
       return Array.isArray(data) ? data : []
     },
@@ -179,15 +178,15 @@ export const useCategoriesQuery = () => {
 }
 
 export const useCreateTransactionMutation = () => {
-  const axiosInstance = useAxiosInstance()
+  const { apiFetch } = useApi()
   const queryClient = useQueryClient()
 
   return useMutation<TransactionItem, unknown, CreateTransactionPayload>({
-    mutationFn: async (payload) => {
-      const { data } = await axiosInstance.post<RawTransactionItem>(
-        '/transactions',
-        payload
-      )
+    mutationFn: async payload => {
+      const data = await apiFetch<RawTransactionItem>('/transactions', {
+        method: 'POST',
+        body: payload
+      })
 
       return normalizeTransaction(data)
     },

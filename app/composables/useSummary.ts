@@ -1,6 +1,6 @@
 import { computed, unref, type Ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { useAxiosInstance } from './useAxiosInstance'
+import { useApi } from './useApi'
 
 type MaybeMonth = Ref<string | undefined> | string | undefined
 
@@ -19,7 +19,7 @@ const normalizeSummary = (
 })
 
 export const useSummaryQuery = (month?: MaybeMonth) => {
-  const axiosInstance = useAxiosInstance()
+  const { apiFetch } = useApi()
 
   return useQuery<SummaryResponse>({
     queryKey: computed(() => [
@@ -29,8 +29,8 @@ export const useSummaryQuery = (month?: MaybeMonth) => {
     queryFn: async () => {
       const resolvedMonth = month ? unref(month) : undefined
 
-      const { data } = await axiosInstance.get<SummaryResponse>('/summary', {
-        params: resolvedMonth ? { month: resolvedMonth } : undefined
+      const data = await apiFetch<SummaryResponse>('/summary', {
+        query: resolvedMonth ? { month: resolvedMonth } : undefined
       })
 
       return normalizeSummary(data)

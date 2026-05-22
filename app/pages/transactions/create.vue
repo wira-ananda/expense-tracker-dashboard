@@ -29,9 +29,9 @@ const selectedCategoryId = ref('')
 const amountDigits = ref('')
 const transactionDate = ref(new Date().toISOString().slice(0, 10))
 const merchantDescription = ref('')
-// const notes = ref('')
 const selectedAccount = ref('')
-// const receiptFile = ref<File | null>(null)
+
+const dateInputRef = ref<HTMLInputElement | null>(null)
 
 const accountOptions = [{ value: '', label: 'Pilih akun' }]
 
@@ -69,17 +69,22 @@ const canSubmit = computed(() => {
 
 const isSubmitting = computed(() => createTransactionMutation.isPending.value)
 
-// const receiptFileName = computed(() => receiptFile.value?.name || '')
-
 const handleGoBack = () => {
   router.back()
 }
 
-// const handleReceiptChange = (event: Event) => {
-//   const target = event.target as HTMLInputElement
-//   const file = target.files?.[0] || null
-//   receiptFile.value = file
-// }
+const openDatePicker = () => {
+  const input = dateInputRef.value
+
+  if (!input) return
+
+  if (typeof input.showPicker === 'function') {
+    input.showPicker()
+    return
+  }
+
+  input.focus()
+}
 
 const buildFinalNote = () => {
   const description = merchantDescription.value.trim()
@@ -106,7 +111,7 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <section class="mx-auto w-full pb-8 mt-6">
+  <section class="mx-auto mt-6 w-full pb-8">
     <div class="mb-6 flex justify-between">
       <div class="mt-3">
         <h1
@@ -118,6 +123,7 @@ const handleSubmit = async () => {
           Catat pemasukan atau pengeluaran baru dengan rapi.
         </p>
       </div>
+
       <button
         type="button"
         class="inline-flex cursor-pointer items-center gap-2 rounded-[10px] px-2 py-1 text-[14px] font-medium text-[#334155] transition hover:bg-[#EEF3F8] hover:text-[#0F172A]"
@@ -198,13 +204,21 @@ const handleSubmit = async () => {
 
             <div class="relative">
               <input
+                ref="dateInputRef"
                 v-model="transactionDate"
                 type="date"
-                class="h-12 w-full rounded-[12px] border border-[#D7DEE8] bg-white px-4 pr-11 text-[14px] font-medium text-[#0F172A] outline-none transition focus:border-[#18B66A]"
+                class="h-12 w-full cursor-pointer rounded-[12px] border border-[#D7DEE8] bg-white px-4 pr-11 text-[14px] font-medium text-[#0F172A] outline-none transition focus:border-[#18B66A]"
+                @click="openDatePicker"
               />
-              <CalendarDays
-                class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]"
-              />
+
+              <button
+                type="button"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-[#94A3B8]"
+                aria-label="Pilih tanggal"
+                @click="openDatePicker"
+              >
+                <CalendarDays class="h-4 w-4" />
+              </button>
             </div>
           </div>
 
@@ -286,20 +300,6 @@ const handleSubmit = async () => {
             />
           </div>
 
-          <!-- <div class="md:col-span-2">
-            <label class="mb-2 block text-[13px] font-medium text-[#0F172A]">
-              Catatan
-              <span class="text-[#94A3B8]">(opsional)</span>
-            </label>
-
-            <textarea
-              v-model="notes"
-              rows="4"
-              placeholder="Tambahkan detail singkat agar transaksi lebih mudah diingat nanti."
-              class="w-full rounded-[12px] border border-[#D7DEE8] bg-white px-4 py-3 text-[14px] font-medium text-[#0F172A] outline-none transition placeholder:text-[#A0AEC0] focus:border-[#18B66A]"
-            />
-          </div> -->
-
           <div class="md:col-span-2">
             <label class="mb-2 block text-[13px] font-medium text-[#0F172A]">
               Bukti transaksi
@@ -353,9 +353,9 @@ const handleSubmit = async () => {
             :disabled="!canSubmit || isSubmitting"
           >
             <ReceiptText class="h-4 w-4" />
-            <span>{{
-              isSubmitting ? 'Menyimpan...' : 'Simpan Transaksi'
-            }}</span>
+            <span>
+              {{ isSubmitting ? 'Menyimpan...' : 'Simpan Transaksi' }}
+            </span>
           </button>
         </div>
       </form>
