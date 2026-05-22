@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { Menu, X } from 'lucide-vue-next'
+import { useUser } from '@clerk/nuxt/composables'
 import AppSidebar from '~/components/dashboard/AppSidebar.vue'
 import AppHeader from '~/components/dashboard/AppHeader.vue'
 import AppLogo from '~/components/AppLogo.vue'
 
 const route = useRoute()
-
-const { data: user, isPending } = useMeQuery()
+const { user, isLoaded } = useUser()
 
 const isSidebarOpen = ref(false)
 
@@ -23,6 +23,17 @@ watch(
 )
 
 const hideAppHeader = computed(() => Boolean(route.meta.hideAppHeader))
+
+const displayName = computed(() => {
+  if (!isLoaded.value) return 'Loading...'
+
+  return (
+    user.value?.username ||
+    user.value?.fullName ||
+    user.value?.primaryEmailAddress?.emailAddress?.split('@')[0] ||
+    'Pengguna'
+  )
+})
 
 const routeTitleMap: Record<string, { title: string; subtitle?: string }> = {
   '/transactions': {
@@ -45,8 +56,8 @@ const pageHeader = computed(() => {
 
   if (route.path === '/') {
     return {
-      title: !isPending.value
-        ? `Selamat datang kembali, ${user.value?.username || 'Pengguna'}!`
+      title: isLoaded.value
+        ? `Selamat datang kembali, ${displayName.value}!`
         : 'Loading...',
       subtitle: 'Berikut ringkasan keuanganmu bulan ini'
     }
@@ -82,16 +93,11 @@ const headerActionTo = computed(
 <template>
   <div class="min-h-dvh bg-[#F6F8FB] text-[#0F172A]">
     <div class="lg:flex">
-      <!-- Desktop sidebar -->
       <div class="hidden lg:block">
-        <AppSidebar
-          :user="user"
-          :is-pending="isPending"
-        />
+        <AppSidebar />
       </div>
 
       <div class="min-w-0 flex-1">
-        <!-- Mobile topbar -->
         <div
           class="flex h-[72px] items-center justify-between border-b border-[#E8EDF3] bg-white px-4 sm:px-6 lg:hidden"
         >
@@ -104,15 +110,11 @@ const headerActionTo = computed(
             <Menu class="h-5 w-5" />
           </button>
 
-          <NuxtLink
-            to="/"
-            class="flex items-center gap-3"
-          >
-            <AppLogo
-              size="h-10 w-10"
-              icon-size="h-5 w-5"
-            />
-            <span class="text-[20px] font-semibold tracking-[-0.02em] text-[#0F172A]">
+          <NuxtLink to="/" class="flex items-center gap-3">
+            <AppLogo size="h-10 w-10" icon-size="h-5 w-5" />
+            <span
+              class="text-[20px] font-semibold tracking-[-0.02em] text-[#0F172A]"
+            >
               ExpenseTracker
             </span>
           </NuxtLink>
@@ -120,7 +122,6 @@ const headerActionTo = computed(
           <div class="w-10" />
         </div>
 
-        <!-- Mobile drawer -->
         <Transition
           enter-active-class="transition duration-200 ease-out"
           enter-from-class="opacity-0"
@@ -129,26 +130,23 @@ const headerActionTo = computed(
           leave-from-class="opacity-100"
           leave-to-class="opacity-0"
         >
-          <div
-            v-if="isSidebarOpen"
-            class="fixed inset-0 z-50 lg:hidden"
-          >
+          <div v-if="isSidebarOpen" class="fixed inset-0 z-50 lg:hidden">
             <div
               class="absolute inset-0 bg-slate-900/35"
               @click="closeSidebar"
             />
 
-            <div class="absolute inset-y-0 left-0 w-[280px] max-w-[85vw] bg-white shadow-xl">
-              <div class="flex h-[72px] items-center justify-between border-b border-[#E8EDF3] px-4">
-                <NuxtLink
-                  to="/"
-                  class="flex items-center gap-3"
-                >
-                  <AppLogo
-                    size="h-10 w-10"
-                    icon-size="h-5 w-5"
-                  />
-                  <span class="text-[20px] font-semibold tracking-[-0.02em] text-[#0F172A]">
+            <div
+              class="absolute inset-y-0 left-0 w-[280px] max-w-[85vw] bg-white shadow-xl"
+            >
+              <div
+                class="flex h-[72px] items-center justify-between border-b border-[#E8EDF3] px-4"
+              >
+                <NuxtLink to="/" class="flex items-center gap-3">
+                  <AppLogo size="h-10 w-10" icon-size="h-5 w-5" />
+                  <span
+                    class="text-[20px] font-semibold tracking-[-0.02em] text-[#0F172A]"
+                  >
                     ExpenseTracker
                   </span>
                 </NuxtLink>
@@ -163,11 +161,7 @@ const headerActionTo = computed(
                 </button>
               </div>
 
-              <AppSidebar
-                mobile
-                :user="user"
-                :is-pending="isPending"
-              />
+              <AppSidebar mobile />
             </div>
           </div>
         </Transition>

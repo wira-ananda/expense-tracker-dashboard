@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import {
   LayoutDashboard,
   ReceiptText,
@@ -7,21 +7,15 @@ import {
   Settings,
   LogOut
 } from 'lucide-vue-next'
+import { useAuth, useUser } from '@clerk/nuxt/composables'
 import AppLogo from '../AppLogo.vue'
 
-const { logout } = useLogout()
 const route = useRoute()
-
-type User = {
-  id: string
-  username: string
-  email: string
-}
+const { user, isLoaded } = useUser()
+const { signOut } = useAuth()
 
 const props = withDefaults(
   defineProps<{
-    user?: User
-    isPending: boolean
     mobile?: boolean
   }>(),
   {
@@ -58,8 +52,25 @@ const navItems = [
 
 const isActive = (item: (typeof navItems)[number]) => item.match(route.path)
 
+const displayName = computed(() => {
+  if (!isLoaded.value) return 'Loading...'
+
+  return (
+    user.value?.username ||
+    user.value?.fullName ||
+    user.value?.primaryEmailAddress?.emailAddress?.split('@')[0] ||
+    'Pengguna'
+  )
+})
+
+const displayEmail = computed(() => {
+  if (!isLoaded.value) return 'Memuat email...'
+
+  return user.value?.primaryEmailAddress?.emailAddress || '-'
+})
+
 const initials = computed(() => {
-  const name = props.user?.username || 'User'
+  const name = displayName.value || 'User'
 
   return name
     .split(' ')
@@ -68,6 +79,16 @@ const initials = computed(() => {
     .join('')
     .toUpperCase()
 })
+
+async function handleLogout() {
+  const signOutFn = unref(signOut)
+
+  if (typeof signOutFn === 'function') {
+    await signOutFn()
+  }
+
+  await navigateTo('/auth/login')
+}
 </script>
 
 <template>
@@ -83,12 +104,11 @@ const initials = computed(() => {
       v-if="!mobile"
       class="flex h-[78px] items-center border-b border-[#E8EDF3] px-5"
     >
-      <NuxtLink
-        to="/"
-        class="flex items-center gap-3"
-      >
+      <NuxtLink to="/" class="flex items-center gap-3">
         <AppLogo />
-        <span class="text-[18px] font-semibold tracking-[-0.02em] text-[#0F172A]">
+        <span
+          class="text-[18px] font-semibold tracking-[-0.02em] text-[#0F172A]"
+        >
           ExpenseTracker
         </span>
       </NuxtLink>
@@ -107,10 +127,7 @@ const initials = computed(() => {
               : 'text-[#334155] hover:bg-[#F6F8FB] hover:text-[#0F172A]'
           "
         >
-          <component
-            :is="item.icon"
-            class="h-[16px] w-[16px]"
-          />
+          <component :is="item.icon" class="h-[16px] w-[16px]" />
           <span>{{ item.label }}</span>
         </NuxtLink>
       </nav>
@@ -127,10 +144,10 @@ const initials = computed(() => {
 
           <div class="min-w-0">
             <p class="truncate text-[14px] font-semibold text-[#0F172A]">
-              {{ isPending ? 'Loading...' : (props.user?.username || 'Pengguna') }}
+              {{ displayName }}
             </p>
             <p class="truncate text-[12px] text-[#94A3B8]">
-              {{ isPending ? 'Memuat email...' : (props.user?.email || '-') }}
+              {{ displayEmail }}
             </p>
           </div>
         </div>
@@ -139,7 +156,7 @@ const initials = computed(() => {
           type="button"
           class="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-[#94A3B8] transition hover:bg-[#F6F8FB] hover:text-[#0F172A]"
           aria-label="Keluar"
-          @click="logout"
+          @click="handleLogout"
         >
           <LogOut class="h-4 w-4" />
         </button>
