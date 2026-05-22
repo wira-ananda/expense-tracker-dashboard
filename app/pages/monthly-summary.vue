@@ -15,9 +15,11 @@ import {
 
 definePageMeta({
   pageTitle: 'Analisis Bulanan',
-  pageSubtitle: 'Pantau ringkasan aktivitas dan tren transaksi Anda dengan lebih mendalam.',
+  pageSubtitle:
+    'Pantau ringkasan aktivitas dan tren transaksi Anda dengan lebih mendalam.',
   headerActionLabel: 'Tambah Transaksi',
-  headerActionTo: '/transactions/create'
+  headerActionTo: '/transactions/create',
+  middleware: 'clerk-auth'
 })
 
 type MerchantVisual = {
@@ -36,7 +38,12 @@ const parseMonthParam = (monthParam: string) => {
   const year = Number(yearPart)
   const month = Number(monthPart)
 
-  if (!Number.isFinite(year) || !Number.isFinite(month) || month < 1 || month > 12) {
+  if (
+    !Number.isFinite(year) ||
+    !Number.isFinite(month) ||
+    month < 1 ||
+    month > 12
+  ) {
     const now = new Date()
     return new Date(now.getFullYear(), now.getMonth(), 1)
   }
@@ -103,8 +110,10 @@ const selectedMonth = ref(toMonthParam(new Date()))
 
 watch(
   monthOptions,
-  (options) => {
-    const hasSelectedMonth = options.some(item => item.value === selectedMonth.value)
+  options => {
+    const hasSelectedMonth = options.some(
+      item => item.value === selectedMonth.value
+    )
 
     if (!hasSelectedMonth) {
       selectedMonth.value = options[0]?.value ?? toMonthParam(new Date())
@@ -181,8 +190,7 @@ const formatCurrency = (value: number) =>
 const formatCompactCurrency = (value: number) =>
   compactCurrencyFormatter.format(value)
 
-const formatPercent = (value: number) =>
-  `${percentFormatter.format(value)}%`
+const formatPercent = (value: number) => `${percentFormatter.format(value)}%`
 
 const calculateChange = (current: number, previous: number) => {
   if (previous === 0) {
@@ -283,14 +291,13 @@ const fallbackCategoryColors = [
 ]
 
 const categoryBreakdown = computed(() => {
-  const grouped = currentMonthExpenseTransactions.value.reduce<Record<string, number>>(
-    (acc, item) => {
-      const label = item.category?.categoryname || 'Lainnya'
-      acc[label] = (acc[label] || 0) + Number(item.amount)
-      return acc
-    },
-    {}
-  )
+  const grouped = currentMonthExpenseTransactions.value.reduce<
+    Record<string, number>
+  >((acc, item) => {
+    const label = item.category?.categoryname || 'Lainnya'
+    acc[label] = (acc[label] || 0) + Number(item.amount)
+    return acc
+  }, {})
 
   const totalExpense = Number(currentSummary.value?.expense ?? 0)
 
@@ -372,7 +379,7 @@ const dailySeriesData = computed(() => {
   const incomeByDay = Array.from({ length: daysCount }, () => 0)
   const expenseByDay = Array.from({ length: daysCount }, () => 0)
 
-  currentMonthTransactions.value.forEach((transaction) => {
+  currentMonthTransactions.value.forEach(transaction => {
     const date = new Date(transaction.transactionDate)
     const dayIndex = date.getDate() - 1
 
@@ -381,11 +388,13 @@ const dailySeriesData = computed(() => {
     }
 
     if (transaction.type === 'income') {
-      incomeByDay[dayIndex] = (incomeByDay[dayIndex] ?? 0) + Number(transaction.amount)
+      incomeByDay[dayIndex] =
+        (incomeByDay[dayIndex] ?? 0) + Number(transaction.amount)
       return
     }
 
-    expenseByDay[dayIndex] = (expenseByDay[dayIndex] ?? 0) + Number(transaction.amount)
+    expenseByDay[dayIndex] =
+      (expenseByDay[dayIndex] ?? 0) + Number(transaction.amount)
   })
 
   return Array.from({ length: daysCount }, (_, index) => ({
@@ -606,7 +615,9 @@ const isPageLoading = computed(
 
 <template>
   <section class="space-y-6">
-    <div class="rounded-[20px] border border-[#E7EDF4] bg-white px-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:px-5 py-3 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+    <div
+      class="rounded-[20px] border border-[#E7EDF4] bg-white px-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:px-5 py-3 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"
+    >
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center px-2">
         <div class="flex items-center text-[13px] font-semibold text-[#0F172A]">
           Pilih bulan:
@@ -655,7 +666,9 @@ const isPageLoading = computed(
             <FileSpreadsheet class="h-4 w-4" />
             <span>Export CSV</span>
           </button>
-          <div class="pointer-events-none absolute right-0 top-[calc(100%+8px)] z-10 hidden w-[220px] rounded-[12px] bg-[#0F172A] px-3 py-2 text-[12px] text-white shadow-lg group-hover:block">
+          <div
+            class="pointer-events-none absolute right-0 top-[calc(100%+8px)] z-10 hidden w-[220px] rounded-[12px] bg-[#0F172A] px-3 py-2 text-[12px] text-white shadow-lg group-hover:block"
+          >
             Export CSV akan menyusul di versi berikutnya.
           </div>
         </div>
@@ -670,7 +683,9 @@ const isPageLoading = computed(
             <span>Export PDF</span>
           </button>
 
-          <div class="pointer-events-none absolute right-0 top-[calc(100%+8px)] z-10 hidden w-[220px] rounded-[12px] bg-[#0F172A] px-3 py-2 text-[12px] text-white shadow-lg group-hover:block">
+          <div
+            class="pointer-events-none absolute right-0 top-[calc(100%+8px)] z-10 hidden w-[220px] rounded-[12px] bg-[#0F172A] px-3 py-2 text-[12px] text-white shadow-lg group-hover:block"
+          >
             Export PDF akan menyusul di versi berikutnya.
           </div>
         </div>
@@ -702,10 +717,7 @@ const isPageLoading = computed(
               {{ card.value }}
             </p>
 
-            <p
-              class="mt-3 text-[12px] font-medium"
-              :class="card.helperClass"
-            >
+            <p class="mt-3 text-[12px] font-medium" :class="card.helperClass">
               {{ card.helper }}
             </p>
           </div>
@@ -714,22 +726,22 @@ const isPageLoading = computed(
             class="flex h-10 w-10 items-center justify-center rounded-[12px]"
             :class="card.iconWrapperClass"
           >
-            <Icon
-              :name="card.icon"
-              class="h-5 w-5"
-            />
+            <Icon :name="card.icon" class="h-5 w-5" />
           </div>
         </div>
       </article>
     </div>
 
-    <article class="rounded-[20px] border border-[#E7EDF4] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
+    <article
+      class="rounded-[20px] border border-[#E7EDF4] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6"
+    >
       <div class="mb-4">
         <h2 class="text-[18px] font-semibold text-[#0F172A]">
           Tren harian pemasukan & pengeluaran
         </h2>
         <p class="mt-1 text-[14px] text-[#64748B]">
-          Pantau pergerakan transaksi harian agar pola bulan ini lebih mudah dibaca.
+          Pantau pergerakan transaksi harian agar pola bulan ini lebih mudah
+          dibaca.
         </p>
       </div>
 
@@ -761,20 +773,24 @@ const isPageLoading = computed(
             Belum ada transaksi di bulan ini
           </p>
           <p class="mt-2 text-[14px] text-[#64748B]">
-            Setelah ada transaksi, tren harian pemasukan dan pengeluaran akan terlihat di sini.
+            Setelah ada transaksi, tren harian pemasukan dan pengeluaran akan
+            terlihat di sini.
           </p>
         </div>
       </div>
     </article>
 
     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-      <article class="rounded-[20px] border border-[#E7EDF4] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
+      <article
+        class="rounded-[20px] border border-[#E7EDF4] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6"
+      >
         <div class="mb-4">
           <h2 class="text-[18px] font-semibold text-[#0F172A]">
             Kategori pengeluaran
           </h2>
           <p class="mt-1 text-[14px] text-[#64748B]">
-            Lihat kategori mana yang paling banyak menyerap pengeluaran bulan ini.
+            Lihat kategori mana yang paling banyak menyerap pengeluaran bulan
+            ini.
           </p>
         </div>
 
@@ -783,10 +799,7 @@ const isPageLoading = computed(
           class="h-[320px] animate-pulse rounded-[16px] bg-[#F8FAFC]"
         />
 
-        <div
-          v-else-if="categoryBreakdown.length > 0"
-          class="min-h-[320px]"
-        >
+        <div v-else-if="categoryBreakdown.length > 0" class="min-h-[320px]">
           <ClientOnly>
             <apexchart
               type="donut"
@@ -806,26 +819,27 @@ const isPageLoading = computed(
               Belum ada pengeluaran bulan ini
             </p>
             <p class="mt-2 text-[14px] text-[#64748B]">
-              Saat pengeluaran mulai tercatat, distribusi kategorinya akan muncul di sini.
+              Saat pengeluaran mulai tercatat, distribusi kategorinya akan
+              muncul di sini.
             </p>
           </div>
         </div>
       </article>
 
-      <article class="rounded-[20px] border border-[#E7EDF4] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6">
+      <article
+        class="rounded-[20px] border border-[#E7EDF4] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6"
+      >
         <div class="mb-4">
           <h2 class="text-[18px] font-semibold text-[#0F172A]">
             Merchant teratas
           </h2>
           <p class="mt-1 text-[14px] text-[#64748B]">
-            Ringkasan merchant atau deskripsi yang paling banyak menyumbang pengeluaran bulan ini.
+            Ringkasan merchant atau deskripsi yang paling banyak menyumbang
+            pengeluaran bulan ini.
           </p>
         </div>
 
-        <div
-          v-if="isPageLoading"
-          class="space-y-3"
-        >
+        <div v-if="isPageLoading" class="space-y-3">
           <div
             v-for="index in 5"
             :key="index"
@@ -833,10 +847,7 @@ const isPageLoading = computed(
           />
         </div>
 
-        <div
-          v-else-if="topMerchants.length > 0"
-          class="space-y-3"
-        >
+        <div v-else-if="topMerchants.length > 0" class="space-y-3">
           <div
             v-for="merchant in topMerchants"
             :key="merchant.label"
@@ -847,10 +858,7 @@ const isPageLoading = computed(
                 class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px]"
                 :class="merchant.visual.wrapperClass"
               >
-                <Icon
-                  :name="merchant.visual.icon"
-                  class="h-5 w-5"
-                />
+                <Icon :name="merchant.visual.icon" class="h-5 w-5" />
               </div>
 
               <div class="min-w-0">
@@ -882,7 +890,8 @@ const isPageLoading = computed(
               Belum ada merchant yang bisa dirangkum
             </p>
             <p class="mt-2 text-[14px] text-[#64748B]">
-              Saat transaksi pengeluaran mulai bertambah, daftar ringkasnya akan muncul di sini.
+              Saat transaksi pengeluaran mulai bertambah, daftar ringkasnya akan
+              muncul di sini.
             </p>
           </div>
         </div>

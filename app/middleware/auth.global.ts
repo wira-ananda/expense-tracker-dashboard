@@ -1,13 +1,21 @@
-export default defineNuxtRouteMiddleware((to) => {
-  const token = useCookie<string | null>('auth_token')
+import { useAuth } from '@clerk/nuxt/composables'
 
-  const isAuthPage = to.path.startsWith('/auth')
+export default defineNuxtRouteMiddleware(to => {
+  if (!import.meta.client) return
 
-  if (!token.value && !isAuthPage) {
+  const { isSignedIn, isLoaded } = useAuth()
+
+  const isAuthRoute =
+    to.path.startsWith('/auth/login') ||
+    to.path.startsWith('/auth/register') ||
+    to.path === '/auth/sync' ||
+    to.path === '/auth/complete-profile'
+
+  if (isAuthRoute) return
+
+  if (!isLoaded.value) return
+
+  if (!isSignedIn.value) {
     return navigateTo('/auth/login')
-  }
-
-  if (token.value && isAuthPage) {
-    return navigateTo('/')
   }
 })

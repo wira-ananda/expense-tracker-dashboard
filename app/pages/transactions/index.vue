@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import {
-  Search,
-  Eye,
-  Pencil,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-vue-next'
+import { Search, Eye, Pencil, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import {
   useTransactionsQuery,
   useCategoriesQuery,
@@ -18,7 +12,8 @@ definePageMeta({
   pageTitle: 'Transaksi',
   pageSubtitle: 'Kelola dan pantau semua transaksi keuanganmu',
   headerActionLabel: 'Tambah Transaksi',
-  headerActionTo: '/transactions/create'
+  headerActionTo: '/transactions/create',
+  middleware: 'clerk-auth'
 })
 
 const { data: transactions, isPending, isError } = useTransactionsQuery()
@@ -68,10 +63,10 @@ const sortOptions = [
 
 const categoryOptions = computed(() => [
   { value: 'all', label: 'Semua kategori' },
-  ...((categories.value ?? []).map(item => ({
+  ...(categories.value ?? []).map(item => ({
     value: item.id,
     label: item.categoryname
-  })))
+  }))
 ])
 
 const normalizeText = (value?: string | null) =>
@@ -110,7 +105,7 @@ const filteredTransactions = computed(() => {
   const allTransactions = transactions.value ?? []
   const keyword = normalizeText(searchKeyword.value)
 
-  return allTransactions.filter((transaction) => {
+  return allTransactions.filter(transaction => {
     const categoryName = normalizeText(transaction.category?.categoryname)
     const note = normalizeText(transaction.note)
 
@@ -131,9 +126,7 @@ const filteredTransactions = computed(() => {
       categoryName.includes(keyword) ||
       note.includes(keyword)
 
-    return (
-      typeMatches && categoryMatches && periodMatches && keywordMatches
-    )
+    return typeMatches && categoryMatches && periodMatches && keywordMatches
   })
 })
 
@@ -144,14 +137,14 @@ const sortedTransactions = computed(() => {
     if (selectedSort.value === 'date-desc') {
       return (
         new Date(b.transactionDate).getTime() -
-          new Date(a.transactionDate).getTime()
+        new Date(a.transactionDate).getTime()
       )
     }
 
     if (selectedSort.value === 'date-asc') {
       return (
         new Date(a.transactionDate).getTime() -
-          new Date(b.transactionDate).getTime()
+        new Date(b.transactionDate).getTime()
       )
     }
 
@@ -216,17 +209,11 @@ const resetToFirstPage = () => {
 }
 
 watch(
-  [
-    searchKeyword,
-    selectedType,
-    selectedCategory,
-    selectedPeriod,
-    selectedSort
-  ],
+  [searchKeyword, selectedType, selectedCategory, selectedPeriod, selectedSort],
   resetToFirstPage
 )
 
-watch(totalPages, (nextTotalPages) => {
+watch(totalPages, nextTotalPages => {
   if (currentPage.value > nextTotalPages) {
     currentPage.value = nextTotalPages
   }
@@ -296,7 +283,7 @@ const tableRows = computed(() =>
             type="text"
             placeholder="Cari transaksi..."
             class="h-12 w-full rounded-[10px] border border-[#D7DEE8] bg-white pl-11 pr-4 text-[14px] font-medium text-[#0F172A] outline-none transition placeholder:text-[#A0AEC0] focus:border-[#18B66A] px-8"
-          >
+          />
         </div>
 
         <div class="flex flex-col gap-3 sm:flex-row lg:shrink-0">
@@ -353,7 +340,8 @@ const tableRows = computed(() =>
             Semua transaksi
           </h2>
           <p class="mt-1 text-[14px] text-[#64748B]">
-            Lihat dan rapikan seluruh pemasukan serta pengeluaranmu di satu tempat.
+            Lihat dan rapikan seluruh pemasukan serta pengeluaranmu di satu
+            tempat.
           </p>
         </div>
 
@@ -375,10 +363,7 @@ const tableRows = computed(() =>
         </div>
       </div>
 
-      <div
-        v-if="isPending"
-        class="space-y-3 p-4 sm:p-6"
-      >
+      <div v-if="isPending" class="space-y-3 p-4 sm:p-6">
         <div
           v-for="index in 6"
           :key="index"
@@ -409,7 +394,8 @@ const tableRows = computed(() =>
             Belum ada transaksi yang cocok
           </p>
           <p class="mt-2 text-[14px] text-[#64748B]">
-            Ubah filter atau tambahkan transaksi baru agar daftar ini mulai terisi.
+            Ubah filter atau tambahkan transaksi baru agar daftar ini mulai
+            terisi.
           </p>
         </div>
       </div>
@@ -468,13 +454,12 @@ const tableRows = computed(() =>
                       class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
                       :class="row.visual.wrapperClass"
                     >
-                      <Icon
-                        :name="row.visual.icon"
-                        class="h-4 w-4"
-                      />
+                      <Icon :name="row.visual.icon" class="h-4 w-4" />
                     </div>
 
-                    <p class="truncate text-[14px] font-semibold text-[#0F172A]">
+                    <p
+                      class="truncate text-[14px] font-semibold text-[#0F172A]"
+                    >
                       {{ row.title }}
                     </p>
                   </div>
@@ -495,9 +480,12 @@ const tableRows = computed(() =>
 
                 <td
                   class="px-5 py-4 text-right text-[14px] font-semibold"
-                  :class="row.type === 'income' ? 'text-[#16A34A]' : 'text-[#EF4444]'"
+                  :class="
+                    row.type === 'income' ? 'text-[#16A34A]' : 'text-[#EF4444]'
+                  "
                 >
-                  {{ row.type === 'income' ? '+' : '-' }}{{ formatCurrency(row.amount) }}
+                  {{ row.type === 'income' ? '+' : '-'
+                  }}{{ formatCurrency(row.amount) }}
                 </td>
 
                 <td class="px-5 py-4">
@@ -538,10 +526,7 @@ const tableRows = computed(() =>
                   class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px]"
                   :class="row.visual.wrapperClass"
                 >
-                  <Icon
-                    :name="row.visual.icon"
-                    class="h-5 w-5"
-                  />
+                  <Icon :name="row.visual.icon" class="h-5 w-5" />
                 </div>
 
                 <div class="min-w-0">
@@ -556,9 +541,12 @@ const tableRows = computed(() =>
 
               <p
                 class="shrink-0 text-right text-[14px] font-semibold"
-                :class="row.type === 'income' ? 'text-[#16A34A]' : 'text-[#EF4444]'"
+                :class="
+                  row.type === 'income' ? 'text-[#16A34A]' : 'text-[#EF4444]'
+                "
               >
-                {{ row.type === 'income' ? '+' : '-' }}{{ formatCurrency(row.amount) }}
+                {{ row.type === 'income' ? '+' : '-'
+                }}{{ formatCurrency(row.amount) }}
               </p>
             </div>
 
@@ -611,7 +599,9 @@ const tableRows = computed(() =>
           <p class="text-[14px] text-[#64748B]">
             Menampilkan
             <span class="font-semibold text-[#0F172A]">
-              {{ totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1 }}
+              {{
+                totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1
+              }}
             </span>
             sampai
             <span class="font-semibold text-[#0F172A]">
@@ -633,10 +623,7 @@ const tableRows = computed(() =>
               <span>Sebelumnya</span>
             </button>
 
-            <template
-              v-for="page in visiblePages"
-              :key="`${page}`"
-            >
+            <template v-for="page in visiblePages" :key="`${page}`">
               <span
                 v-if="page === 'ellipsis'"
                 class="px-1 text-[13px] text-[#94A3B8]"
