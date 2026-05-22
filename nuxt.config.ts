@@ -1,19 +1,18 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/icon'],
+  modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/icon', '@clerk/nuxt'],
 
   devtools: {
     enabled: true
   },
 
   css: ['~/assets/css/main.css'],
-  runtimeConfig: {
-    // Keys di dalam sini bersifat PRIVATE (hanya server-side)
-    apiSecret: '', // Akan diisi oleh NUXT_API_SECRET di .env
 
-    // Keys di dalam 'public' bersifat PUBLIC (bisa diakses di browser)
+  runtimeConfig: {
+    apiSecret: '',
+
     public: {
-      apiBase: 'http://localhost:2000/' // Akan diisi oleh NUXT_PUBLIC_API_BASE di .env
+      apiBase: 'http://localhost:5172'
     }
   },
 
